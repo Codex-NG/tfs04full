@@ -16,6 +16,7 @@
 ////////////////////////////////////////////////////////////////////////
 #include "otpch.h"
 #include "otsystem.h"
+#include <sys/signal.h>
 
 #include <iostream>
 #include <fstream>
