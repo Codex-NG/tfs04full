@@ -256,7 +256,7 @@ bool IOGuild::disbandGuild(uint32_t guildId)
 	for(AutoList<Player>::iterator it = Player::autoList.begin(); it != Player::autoList.end(); ++it)
 	{
 		if(it->second->getGuildId() == guildId)
-		it->second->leaveGuild();
+			it->second->leaveGuild();
 		else
 		{
 			iit = std::find(it->second->invitedToGuildsList.begin(), it->second->invitedToGuildsList.end(), guildId);
