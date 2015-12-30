@@ -353,6 +353,8 @@ class Game
 			uint32_t flags = 0, bool test = false);
 		ReturnValue internalAddItem(Creature* actor, Cylinder* toCylinder, Item* item, int32_t index,
 			uint32_t flags, bool test, uint32_t& remainderCount);
+		ReturnValue internalAddItem(Creature* actor, Cylinder* toCylinder, Item* item, int32_t index,
+			uint32_t flags, bool test, uint32_t& remainderCount, Item** stackItem);
 		ReturnValue internalRemoveItem(Creature* actor, Item* item, int32_t count = -1,  bool test = false, uint32_t flags = 0);
 
 		ReturnValue internalPlayerAddItem(Creature* actor, Player* player, Item* item,
@@ -453,7 +455,7 @@ class Game
 		bool playerMoveThing(uint32_t playerId, const Position& fromPos, uint16_t spriteId,
 			int16_t fromStackpos, const Position& toPos, uint8_t count);
 		bool playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
-			const Position& movingCreatureOrigPos, const Position& toPos);
+			const Position& movingCreatureOrigPos, const Position& toPos, bool delay);
 		bool playerMoveItem(uint32_t playerId, const Position& fromPos,
 			uint16_t spriteId, int16_t fromStackpos, const Position& toPos, uint8_t count);
 		bool playerMove(uint32_t playerId, Direction dir);

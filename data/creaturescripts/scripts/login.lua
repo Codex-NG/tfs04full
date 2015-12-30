@@ -43,6 +43,5 @@ function onLogin(cid)
 
 	registerCreatureEvent(cid, "ReportBug")
 	registerCreatureEvent(cid, "AdvanceSave")
-	registerCreatureEvent(cid, "MoveItem")
 	return true
 end

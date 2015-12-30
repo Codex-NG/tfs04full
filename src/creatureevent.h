@@ -72,6 +72,7 @@ class CreatureEvents : public BaseEvents
 		// global events
 		bool playerLogin(Player* player);
 		bool playerLogout(Player* player, bool forceLogout);
+		uint32_t executeMoveItems(Creature* actor, Item* item, const Position& frompos, const Position& pos);
 
 		CreatureEvent* getEventByName(const std::string& name);
 
@@ -135,9 +136,8 @@ class CreatureEvent : public Event
 		uint32_t executeCast(Creature* creature, Creature* target = NULL);
 		uint32_t executeKill(Creature* creature, Creature* target, const DeathEntry& entry);
 		uint32_t executeDeath(Creature* creature, Item* corpse, DeathList deathList);
-		uint32_t executeMoveItem(Player* player, Item* item, uint8_t count, const Position& fromPos, 
-			const Position& toPos, Item* toContainer, Item* fromContainer, int16_t fstack);
 		uint32_t executePrepareDeath(Creature* creature, DeathList deathList);
+		uint32_t executeMoveItem(Creature* actor, Item* item, const Position& frompos, const Position& pos);
 		//
 
 	protected:
