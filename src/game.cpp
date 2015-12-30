@@ -1469,8 +1469,7 @@ bool Game::playerMoveItem(uint32_t playerId, const Position& fromPos,
 		return false;
 	}
 
-	Item* tileItem = NULL;
-	if(!g_creatureEvents->executeMoveItems(player,item,mapFromPos, mapToPos))
+	if(!g_creatureEvents->executeMoveItems(player, item, mapFromPos, mapToPos))
 		return false;
 
 	ReturnValue ret = internalMoveItem(player, fromCylinder, toCylinder, toIndex, item, count, NULL);
