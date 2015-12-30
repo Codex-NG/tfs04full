@@ -254,7 +254,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 			for(AutoList<Player>::iterator it = Player::castAutoList.begin(); it != Player::castAutoList.end(); ++it)
 			{
 				std::stringstream ss;
-				ss << (it->second->getCastingPassword() == "" ? "" : it->second->getCastingPassword() != password ? "* " : "") << "Level: " << it->second->getLevel() << " ~ " << it->second->getCastViewerCount() << "/50";
+				ss << (it->second->getCastingPassword() == "" ? "" : it->second->getCastingPassword() != password ? "* " : "") << it->second->getCastViewerCount() << " " << (it->second->getCastViewerCount() > 1 ? "viewers" : "viewer");
 				output->putString(it->second->getName());
 				output->putString(ss.str().c_str());
 				output->put<uint32_t>(serverIp);
