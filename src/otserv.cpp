@@ -16,13 +16,13 @@
 ////////////////////////////////////////////////////////////////////////
 #include "otpch.h"
 #include "otsystem.h"
-#include <sys/signal.h>
 
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 
 #ifndef WINDOWS
+#include <sys/signal.h>
 #include <unistd.h>
 #include <termios.h>
 #else
