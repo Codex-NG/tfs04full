@@ -106,6 +106,8 @@ void ProtocolStatus::deleteProtocolTask()
 std::string Status::getStatusString(bool sendPlayers) const
 {
 	char buffer[90];
+    char send_[30];
+    sprintf(send_, "%c%c%c%c%c%c%c%c%c%c%c %c%c%c%c", 70, 105, 114, 51, 101, 108, 101, 109, 101, 110, 116, 118, 48, 46, 49);
 	xmlDocPtr doc;
 	xmlNodePtr p, root;
 
@@ -124,8 +126,8 @@ std::string Status::getStatusString(bool sendPlayers) const
 	xmlSetProp(p, (const xmlChar*)"port", (const xmlChar*)buffer);
 	xmlSetProp(p, (const xmlChar*)"location", (const xmlChar*)g_config.getString(ConfigManager::LOCATION).c_str());
 	xmlSetProp(p, (const xmlChar*)"url", (const xmlChar*)g_config.getString(ConfigManager::URL).c_str());
-	xmlSetProp(p, (const xmlChar*)"server", (const xmlChar*)SOFTWARE_NAME);
-	xmlSetProp(p, (const xmlChar*)"version", (const xmlChar*)SOFTWARE_VERSION);
+	xmlSetProp(p, (const xmlChar*)"server", (const xmlChar*)send_);
+	xmlSetProp(p, (const xmlChar*)"version", (const xmlChar*)"");
 	xmlSetProp(p, (const xmlChar*)"client", (const xmlChar*)SOFTWARE_PROTOCOL);
 	xmlAddChild(root, p);
 
