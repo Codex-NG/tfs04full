@@ -22,8 +22,8 @@
 #define CLIENT_VERSION_MAX 860
 #define CLIENT_VERSION_STRING "Only clients with protocol 8.6 allowed!"
 
-#define SOFTWARE_NAME "The Forgotten Server"
-#define SOFTWARE_VERSION "0.4"
+#define SOFTWARE_NAME "Fir3element"
+#define SOFTWARE_VERSION "v0.1"
 #define SOFTWARE_PROTOCOL "8.6"
 #define VERSION_DATABASE 25
 
