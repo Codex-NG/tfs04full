@@ -1712,6 +1712,12 @@ void LuaInterface::registerFunctions()
 	//doPlayerSetMaxCapacity(cid, cap)
 	lua_register(m_luaState, "doPlayerSetMaxCapacity", LuaInterface::luaDoPlayerSetMaxCapacity);
 
+	//doPlayerSetMagicLevel(cid, value)
+	lua_register(m_luaState, "doPlayerSetMagicLevel", LuaInterface::luaDoPlayerSetMagicLevel);
+
+	//doPlayerSetSkillLevel(cid, skill, value)
+	lua_register(m_luaState, "doPlayerSetSkillLevel", LuaInterface::luaDoPlayerSetSkillLevel);
+
 	//doPlayerAddSpentMana(cid, amount[, useMultiplier = true])
 	lua_register(m_luaState, "doPlayerAddSpentMana", LuaInterface::luaDoPlayerAddSpentMana);
 
@@ -8831,6 +8837,45 @@ int32_t LuaInterface::luaDoPlayerSetPromotionLevel(lua_State* L)
 		lua_pushboolean(L, false);
 	}
 
+	return 1;
+}
+
+int32_t LuaInterface::luaDoPlayerSetMagicLevel(lua_State* L)
+{
+	//doPlayerSetMagicLevel(uid, value)
+	uint64_t value = popNumber(L);
+
+	ScriptEnviroment* env = getEnv();
+	if(Player* player = env->getPlayerByUID(popNumber(L)))
+	{
+		player->setMagicLevel(value);
+		lua_pushboolean(L, true);
+	}
+	else
+	{
+		errorEx(getError(LUA_ERROR_PLAYER_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
+int32_t LuaInterface::luaDoPlayerSetSkillLevel(lua_State* L)
+{
+	//doPlayerSetSkillLevel(uid, skill, value)
+	uint32_t value = popNumber(L);
+	int32_t skill = popNumber(L);
+
+	ScriptEnviroment* env = getEnv();
+	if(Player* player = env->getPlayerByUID(popNumber(L)))
+	{
+		player->setSkillLevel((skills_t) skill, value);
+		lua_pushboolean(L, true);
+	}
+	else
+	{
+		errorEx(getError(LUA_ERROR_PLAYER_NOT_FOUND));
+		lua_pushboolean(L, false);
+	}
 	return 1;
 }
 

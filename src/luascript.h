@@ -336,6 +336,9 @@ class LuaInterface
 		static int32_t luaDoPlayerAddCastMute(lua_State* L);
 		static int32_t luaDoPlayerRemoveCastMute(lua_State* L);
 		static int32_t luaGetPlayerCastMutes(lua_State* L);
+
+		static int32_t luaDoPlayerSetMagicLevel(lua_State* L);
+		static int32_t luaDoPlayerSetSkillLevel(lua_State* L);
 		
 		static int32_t luaDoRemoveItem(lua_State* L);
 		static int32_t luaDoPlayerFeed(lua_State* L);

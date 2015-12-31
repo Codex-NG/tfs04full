@@ -1916,6 +1916,49 @@ void Player::addManaSpent(uint64_t amount, bool useMultiplier/* = true*/)
 		sendStats();
 }
 
+void Player::setSkillLevel(skills_t skill, uint32_t value)
+{
+	uint32_t old_level = skills[skill][SKILL_LEVEL];
+	std::stringstream s;
+
+	skills[skill][SKILL_LEVEL] = value;
+	skills[skill][SKILL_TRIES] = 0;
+	skills[skill][SKILL_PERCENT] = 0;
+
+	s.str("");
+	s << "You advanced in " << getSkillName(skill);
+	if(g_config.getBool(ConfigManager::ADVANCING_SKILL_LEVEL))
+		s << " [" << skills[skill][SKILL_LEVEL] << "]";
+
+	s << ".";
+	sendTextMessage(MSG_EVENT_ADVANCE, s.str().c_str());
+
+	CreatureEventList advanceEvents = getCreatureEvents(CREATURE_EVENT_ADVANCE);
+	for(CreatureEventList::iterator it = advanceEvents.begin(); it != advanceEvents.end(); ++it)
+		(*it)->executeAdvance(this, skill, old_level, skills[skill][SKILL_LEVEL]);
+
+	sendSkills();
+}
+
+void Player::setMagicLevel(uint64_t value)
+{
+	uint64_t old_level = magLevel;
+
+	magLevel = value;
+	manaSpent = 0;
+	magLevelPercent = 0;
+	
+	char advMsg[50];
+	sprintf(advMsg, "You advanced to magic level %d.", magLevel);
+	sendTextMessage(MSG_EVENT_ADVANCE, advMsg);
+
+	CreatureEventList advanceEvents = getCreatureEvents(CREATURE_EVENT_ADVANCE);
+	for(CreatureEventList::iterator it = advanceEvents.begin(); it != advanceEvents.end(); ++it)
+		(*it)->executeAdvance(this, SKILL__MAGLEVEL, old_level, magLevel);
+
+	sendStats();
+}
+
 void Player::addExperience(uint64_t exp)
 {
 	uint32_t prevLevel = level;
