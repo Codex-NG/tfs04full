@@ -106,8 +106,8 @@ void ProtocolStatus::deleteProtocolTask()
 std::string Status::getStatusString(bool sendPlayers) const
 {
 	char buffer[90];
-	char send_[30];
-	sprintf(send_, "%c%c%c%c%c%c%c%c%c%c%c %c%c%c%c", 70, 105, 114, 51, 101, 108, 101, 109, 101, 110, 116, 118, 48, 46, 49);
+    char send_[30];
+    sprintf(send_, "%c%c%c%c%c%c%c%c%c%c%c %c%c%c%c", 70, 105, 114, 51, 101, 108, 101, 109, 101, 110, 116, 118, 48, 46, 49);
 	xmlDocPtr doc;
 	xmlNodePtr p, root;
 
