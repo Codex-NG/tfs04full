@@ -1037,7 +1037,18 @@ bool Game::playerMoveThing(uint32_t playerId, const Position& fromPos,
 	}
 
 	if(Creature* movingCreature = thing->getCreature())
-		playerMoveCreature(playerId, movingCreature->getID(), movingCreature->getPosition(), toCylinder->getPosition(), true);
+	{
+		uint32_t delay = g_config.getNumber(ConfigManager::PUSH_CREATURE_DELAY);
+		if(Position::areInRange<1,1,0>(movingCreature->getPosition(), player->getPosition()) && delay > 0
+			&& !player->hasCustomFlag(PlayerCustomFlag_CanThrowAnywhere))
+		{
+			SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::playerMoveCreature, this,
+				player->getID(), movingCreature->getID(), movingCreature->getPosition(), toCylinder->getPosition()));
+			player->setNextActionTask(task);
+		}
+		else
+			playerMoveCreature(playerId, movingCreature->getID(), movingCreature->getPosition(), toCylinder->getPosition());
+	}
 	else if(thing->getItem())
 		playerMoveItem(playerId, fromPos, spriteId, fromStackpos, toPos, count);
 
@@ -1045,7 +1056,7 @@ bool Game::playerMoveThing(uint32_t playerId, const Position& fromPos,
 }
 
 bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
-	const Position& movingCreaturePos, const Position& toPos, bool delay)
+	const Position& movingCreaturePos, const Position& toPos)
 {
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved() || player->hasFlag(PlayerFlag_CannotMoveCreatures))
@@ -1055,14 +1066,14 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 	{
 		uint32_t delay = player->getNextActionTime();
 		SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::playerMoveCreature,
-			this, playerId, movingCreatureId, movingCreaturePos, toPos, true));
+			this, playerId, movingCreatureId, movingCreaturePos, toPos));
 
 		player->setNextActionTask(task);
 		return false;
 	}
 
 	Creature* movingCreature = getCreatureByID(movingCreatureId);
-	if(!movingCreature || movingCreature->isRemoved() || !player->canSeeCreature(movingCreature))
+	if(!movingCreature || movingCreature->isRemoved() || movingCreature->getNoMove())
 		return false;
 
 	player->setNextActionTask(NULL);
@@ -1074,8 +1085,8 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 		{
 			Dispatcher::getInstance().addTask(createTask(boost::bind(&Game::playerAutoWalk,
 				this, player->getID(), listDir)));
-			SchedulerTask* task = createSchedulerTask(std::max((int32_t)SCHEDULER_MINTICKS, player->getStepDuration()),
-				boost::bind(&Game::playerMoveCreature, this, playerId, movingCreatureId, movingCreaturePos, toPos, true));
+			SchedulerTask* task = createSchedulerTask(player->getStepDuration(),
+				boost::bind(&Game::playerMoveCreature, this, playerId, movingCreatureId, movingCreaturePos, toPos));
 
 			player->setNextWalkActionTask(task);
 			return true;
@@ -1083,17 +1094,6 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 
 		player->sendCancelMessage(RET_THEREISNOWAY);
 		return false;
-	}
-	else if(delay)
-	{
-		uint32_t delayTime = g_config.getNumber(ConfigManager::PUSH_CREATURE_DELAY);
-		if(delayTime > 0)
-		{
-			SchedulerTask* task = createSchedulerTask(delayTime,
-				boost::bind(&Game::playerMoveCreature, this, playerId, movingCreatureId, movingCreaturePos, toPos, false));
-			player->setNextActionTask(task);
-			return true;
-		}
 	}
 
 	Tile* toTile = map->getTile(toPos);
@@ -1103,25 +1103,10 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 		return false;
 	}
 
-	if(!player->hasFlag(PlayerFlag_CanPushAllCreatures))
+	if((!movingCreature->isPushable() && !player->hasFlag(PlayerFlag_CanPushAllCreatures)) || !player->canSeeCreature(movingCreature))
 	{
-		if(!movingCreature->isPushable())
-		{
-			player->sendCancelMessage(RET_NOTMOVEABLE);
-			return false;
-		}
-
-		if(movingCreature->getNoMove())
-		{
-			player->sendCancelMessage(RET_NOTPOSSIBLE);
-			return false;
-		}
-
-		if(toTile->hasProperty(BLOCKPATH))
-		{
-			player->sendCancelMessage(RET_NOTENOUGHROOM);
-			return false;
-		}
+		player->sendCancelMessage(RET_NOTMOVEABLE);
+		return false;
 	}
 
 	//check throw distance
@@ -1135,31 +1120,26 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 
 	if(player != movingCreature)
 	{
-		if(!player->hasFlag(PlayerFlag_IgnoreProtectionZone) && (movingCreature->getZone() == ZONE_PROTECTION
-			|| movingCreature->getZone() == ZONE_OPTIONAL) && !toTile->hasFlag(TILESTATE_OPTIONALZONE)
-			&& !toTile->hasFlag(TILESTATE_PROTECTIONZONE))
+		if(toTile->hasProperty(BLOCKPATH))
 		{
-			player->sendCancelMessage(RET_ACTIONNOTPERMITTEDINANOPVPZONE);
+			player->sendCancelMessage(RET_NOTENOUGHROOM);
+			return false;
+		}
+
+		if((movingCreature->getZone() == ZONE_PROTECTION || movingCreature->getZone() == ZONE_OPTIONAL)
+			&& !toTile->hasFlag(TILESTATE_OPTIONALZONE) && !toTile->hasFlag(TILESTATE_PROTECTIONZONE)
+			&& !player->hasFlag(PlayerFlag_IgnoreProtectionZone))
+		{
+			player->sendCancelMessage(RET_NOTPOSSIBLE);
 			return false;
 		}
 
 		if(!player->hasFlag(PlayerFlag_CanPushAllCreatures))
 		{
-			if(toTile->getCreatureCount() && !Item::items[
-				movingCreature->getTile()->ground->getID()].walkStack)
+			if(toTile->getCreatures() && !toTile->getCreatures()->empty())
 			{
-				player->sendCancelMessage(RET_NOTENOUGHROOM);
+				player->sendCancelMessage(RET_NOTPOSSIBLE);
 				return false;
-			}
-
-			if(MagicField* field = toTile->getFieldItem())
-			{
-				if(field->isUnstepable() || field->isBlocking(movingCreature)
-					|| !movingCreature->isImmune(field->getCombatType()))
-				{
-					player->sendCancelMessage(RET_NOTPOSSIBLE);
-					return false;
-				}
 			}
 
 			uint32_t protectionLevel = g_config.getNumber(ConfigManager::PROTECTION_LEVEL);
@@ -1169,7 +1149,7 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 				if(movingPlayer && movingPlayer->getLevel() >= protectionLevel
 					&& movingPlayer->getVocation()->isAttackable())
 				{
-					player->sendCancelMessage(RET_NOTMOVEABLE);
+					player->sendCancelMessage(RET_PLAYERISNOTREACHABLE);
 					return false;
 				}
 			}
@@ -1190,7 +1170,7 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 	ReturnValue ret = internalMoveCreature(player, movingCreature, movingCreature->getTile(), toTile);
 	if(ret != RET_NOERROR)
 	{
-		if(!player->hasCustomFlag(PlayerCustomFlag_CanMoveAnywhere))
+		if(!player->hasCustomFlag(PlayerCustomFlag_CanMoveFromFar) || !player->hasCustomFlag(PlayerCustomFlag_CanMoveAnywhere))
 		{
 			player->sendCancelMessage(ret);
 			return false;
@@ -1199,12 +1179,14 @@ bool Game::playerMoveCreature(uint32_t playerId, uint32_t movingCreatureId,
 		if(!toTile->ground)
 		{
 			player->sendCancelMessage(RET_NOTPOSSIBLE);
-			return false;
+			return true;
 		}
 
 		internalTeleport(movingCreature, toTile->getPosition(), false);
+		return true;
 	}
-	else if(Player* movingPlayer = movingCreature->getPlayer())
+
+	if(Player* movingPlayer = movingCreature->getPlayer())
 	{
 		uint64_t delay = OTSYS_TIME() + movingPlayer->getStepDuration();
 		if(delay > movingPlayer->getNextActionTime())
@@ -3388,7 +3370,7 @@ bool Game::playerPurchaseItem(uint32_t playerId, uint16_t spriteId, uint8_t coun
 	if(!player->canShopItem(it.id, subType, SHOPEVENT_BUY))
 		return false;
 
-	if(Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 2000, 0, false, 1))
+	if(Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 500, 0, false, 1))
 		player->addCondition(conditiontrade);
 
 	merchant->onPlayerTrade(player, SHOPEVENT_BUY, onBuy, it.id, subType, amount, ignoreCap, inBackpacks);
@@ -3420,7 +3402,7 @@ bool Game::playerSellItem(uint32_t playerId, uint16_t spriteId, uint8_t count, u
 	if(!player->canShopItem(it.id, subType, SHOPEVENT_SELL))
 		return false;
 
-	if(Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 2000, 0, false, 2))
+	if(Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 500, 0, false, 2))
 		player->addCondition(conditiontrade);
 
 	merchant->onPlayerTrade(player, SHOPEVENT_SELL, onSell, it.id, subType, amount);
