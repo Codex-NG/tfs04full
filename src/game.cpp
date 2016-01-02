@@ -3351,7 +3351,7 @@ bool Game::playerPurchaseItem(uint32_t playerId, uint16_t spriteId, uint8_t coun
 	if(!player || player->isRemoved())
 		return false;
 
-	if(player->hasCondition(CONDITION_EXHAUST, 1))
+	if(player->hasCondition(CONDITION_EXHAUST, EXHAUST_NPC))
 		return false;
 
 	int32_t onBuy, onSell;
@@ -3370,8 +3370,8 @@ bool Game::playerPurchaseItem(uint32_t playerId, uint16_t spriteId, uint8_t coun
 	if(!player->canShopItem(it.id, subType, SHOPEVENT_BUY))
 		return false;
 
-	if(Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 500, 0, false, 1))
-		player->addCondition(conditiontrade);
+	if(Condition* onBuyExhaust = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, g_config.getNumber(ConfigManager::EXHAUST_ONBUY), 0, false, EXHAUST_NPC))
+		player->addCondition(onBuyExhaust);
 
 	merchant->onPlayerTrade(player, SHOPEVENT_BUY, onBuy, it.id, subType, amount, ignoreCap, inBackpacks);
 	return true;
@@ -3383,7 +3383,7 @@ bool Game::playerSellItem(uint32_t playerId, uint16_t spriteId, uint8_t count, u
 	if(!player || player->isRemoved())
 		return false;
 
-	if(player->hasCondition(CONDITION_EXHAUST, 2))
+	if(player->hasCondition(CONDITION_EXHAUST, EXHAUST_NPC))
 		return false;
 
 	int32_t onBuy, onSell;
@@ -3402,8 +3402,8 @@ bool Game::playerSellItem(uint32_t playerId, uint16_t spriteId, uint8_t count, u
 	if(!player->canShopItem(it.id, subType, SHOPEVENT_SELL))
 		return false;
 
-	if(Condition* conditiontrade = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, 500, 0, false, 2))
-		player->addCondition(conditiontrade);
+	if(Condition* onSellExhaust = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, g_config.getNumber(ConfigManager::EXHAUST_ONSELL), 0, false, EXHAUST_NPC))
+		player->addCondition(onSellExhaust);
 
 	merchant->onPlayerTrade(player, SHOPEVENT_SELL, onSell, it.id, subType, amount);
 	return true;
@@ -3715,6 +3715,12 @@ bool Game::playerRequestOutfit(uint32_t playerId)
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved())
 		return false;
+
+	if(player->hasCondition(CONDITION_EXHAUST, EXHAUST_OUTFIT))
+		return false;
+
+	if(Condition* changeOutfitExhaust = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, g_config.getNumber(ConfigManager::EXHAUST_CHANGEOUFIT), 0, false, EXHAUST_OUTFIT))
+		player->addCondition(changeOutfitExhaust);
 
 	player->sendOutfitWindow();
 	return true;

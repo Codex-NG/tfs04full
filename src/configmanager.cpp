@@ -220,7 +220,7 @@ bool ConfigManager::load()
 	m_confNumber[EXTRA_PARTY_PERCENT] = getGlobalNumber("extraPartyExperiencePercent", 5);
 	m_confNumber[EXTRA_PARTY_LIMIT] = getGlobalNumber("extraPartyExperienceLimit", 20);
 	m_confBool[DISABLE_OUTFITS_PRIVILEGED] = getGlobalBool("disableOutfitsForPrivilegedPlayers", false);
-	m_confBool[HOUSE_STORAGE] = getGlobalBool("useHouseDataStorage", false);
+	m_confBool[HOUSE_STORAGE] = getGlobalBool("useHouseDataStorage", true);
 	m_confBool[TRACER_BOX] = getGlobalBool("promptExceptionTracerErrorBox", true);
 	m_confNumber[LOGIN_PROTECTION] = getGlobalNumber("loginProtectionPeriod", 10 * 1000);
 	m_confBool[STORE_DIRECTION] = getGlobalBool("storePlayerDirection", false);
@@ -249,8 +249,8 @@ bool ConfigManager::load()
 	m_confNumber[NICE_LEVEL] = getGlobalNumber("niceLevel", 5);
 	m_confNumber[EXPERIENCE_COLOR] = getGlobalNumber("gainExperienceColor", COLOR_WHITE);
 	m_confBool[SHOW_HEALING_DAMAGE_MONSTER] = getGlobalBool("showHealingDamageForMonsters", false);
-	m_confNumber[HEALTH_HEALING_COLOR] = getGlobalNumber("healthHealingColor", COLOR_GREEN); /* modificando cor do heal-life pelo config.lua */
-	m_confNumber[MANA_HEALING_COLOR] = getGlobalNumber("manaHealingColor", COLOR_DARKPURPLE); /* modificando cor do heal-mana pelo config.lua */
+	m_confNumber[HEALTH_HEALING_COLOR] = getGlobalNumber("healthHealingColor", COLOR_GREEN);
+	m_confNumber[MANA_HEALING_COLOR] = getGlobalNumber("manaHealingColor", COLOR_DARKPURPLE);
 	m_confBool[CHECK_CORPSE_OWNER] = getGlobalBool("checkCorpseOwner", true);
 	m_confBool[BUFFER_SPELL_FAILURE] = getGlobalBool("bufferMutedOnSpellFailure", false);
 	m_confBool[CONFIRM_OUTDATED_VERSION] = getGlobalBool("confirmOutdatedVersion", true);
@@ -312,6 +312,9 @@ bool ConfigManager::load()
 	m_confNumber[FIST_BASE_ATTACK] = getGlobalNumber("fistBaseAttack", 7);
 	m_confBool[ENABLE_CAST]	= getGlobalBool("enableCast", true);
 	m_confBool[SKIP_ITEMS_VERSION] = getGlobalBool("skipItemsVersionCheck", true);
+	m_confNumber[EXHAUST_ONBUY] = getGlobalNumber("onBuy", 500);
+	m_confNumber[EXHAUST_ONSELL] = getGlobalNumber("onSell", 500);
+	m_confNumber[EXHAUST_CHANGEOUFIT] = getGlobalNumber("changeOutfit", 500);
 
 	m_loaded = true;
 	return true;

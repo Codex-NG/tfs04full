@@ -68,6 +68,8 @@
 	noDamageToSameLookfeet = false
 	showHealingDamage = false
 	showHealingDamageForMonsters = false
+	healthHealingColor = COLOR_GREEN
+	manaHealingColor = COLOR_DARKPURPLE
 	fieldOwnershipDuration = 5 * 1000
 	stopAttackingAtExit = false
 	loginProtectionPeriod = 10 * 1000
@@ -154,6 +156,11 @@
 	timeBetweenActions = 500
 	timeBetweenExActions = 1000
 	hotkeyAimbotEnabled = true
+
+	-- Exhaust
+	onBuy = 500
+	onSell = 500
+	changeOutfit = 500
 
 	-- Map
 	-- NOTE: storeTrash costs more memory, but will perform alot faster cleaning.

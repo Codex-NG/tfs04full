@@ -146,7 +146,9 @@ enum GamemasterCondition_t
 enum Exhaust_t
 {
 	EXHAUST_COMBAT = 1,
-	EXHAUST_HEALING = 2
+	EXHAUST_HEALING = 2,
+	EXHAUST_NPC = 3,
+	EXHAUST_OUTFIT = 4
 };
 
 typedef std::set<uint32_t> VIPSet;
@@ -266,6 +268,7 @@ class Player : public Creature, public Cylinder
 					cast.bans.erase(it);
 					return true;
 				}
+
 			return false;
 		}
 
@@ -288,6 +291,7 @@ class Player : public Creature, public Cylinder
 					cast.muted.erase(it);
 					return true;
 				}
+
 			return false;
 		}
 
