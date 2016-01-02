@@ -3352,7 +3352,10 @@ bool Game::playerPurchaseItem(uint32_t playerId, uint16_t spriteId, uint8_t coun
 		return false;
 
 	if(player->hasCondition(CONDITION_EXHAUST, EXHAUST_NPC))
+	{
+		player->sendCancelMessage(RET_YOUHAVETOWAIT);
 		return false;
+	}
 
 	int32_t onBuy, onSell;
 	Npc* merchant = player->getShopOwner(onBuy, onSell);
@@ -3384,7 +3387,10 @@ bool Game::playerSellItem(uint32_t playerId, uint16_t spriteId, uint8_t count, u
 		return false;
 
 	if(player->hasCondition(CONDITION_EXHAUST, EXHAUST_NPC))
+	{
+		player->sendCancelMessage(RET_YOUHAVETOWAIT);
 		return false;
+	}
 
 	int32_t onBuy, onSell;
 	Npc* merchant = player->getShopOwner(onBuy, onSell);
@@ -3717,7 +3723,10 @@ bool Game::playerRequestOutfit(uint32_t playerId)
 		return false;
 
 	if(player->hasCondition(CONDITION_EXHAUST, EXHAUST_OUTFIT))
+	{
+		player->sendCancelMessage(RET_YOUHAVETOWAIT);
 		return false;
+	}
 
 	if(Condition* changeOutfitExhaust = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_EXHAUST, g_config.getNumber(ConfigManager::EXHAUST_CHANGEOUFIT), 0, false, EXHAUST_OUTFIT))
 		player->addCondition(changeOutfitExhaust);

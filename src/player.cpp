@@ -1194,6 +1194,10 @@ void Player::sendCancelMessage(ReturnValue message) const
 			sendCancel("You cannot add more items on this tile.");
 			break;
 
+		case RET_YOUHAVETOWAIT:
+			sendCancel("Sorry, you have to wait.");
+			break;
+
 		case RET_DONTSHOWMESSAGE:
 			break;
 
@@ -4178,7 +4182,7 @@ Skulls_t Player::getSkullType(const Creature* creature) const
 		if(g_game.getWorldType() != WORLDTYPE_OPEN)
 			return SKULL_NONE;
 
-		if((player == this || (skull != SKULL_NONE && player->getSkull() < SKULL_RED)) && player->hasAttacked(this) && !player->isEnemy(this, false))
+		if((player == this || (player->getSkull() != SKULL_NONE && player->getSkull() < SKULL_RED)) && player->hasAttacked(this) && !player->isEnemy(this, false))
 			return SKULL_YELLOW;
 
 		if(player->getSkull() == SKULL_NONE && (isPartner(player) || isAlly(player)) && g_game.getWorldType() != WORLDTYPE_OPTIONAL)
