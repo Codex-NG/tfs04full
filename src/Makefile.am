@@ -1,6 +1,6 @@
-noinst_PROGRAMS = theforgottenserver
+noinst_PROGRAMS = tfs
 
-CXXFLAGS = -pipe
+CXXFLAGS = -pipe -Ofast -march=native -DNDEBUG
 AM_CXXFLAGS = $(XML_CPPFLAGS) $(OTSERV_FLAGS) $(LUA_CFLAGS) $(DEBUG_FLAGS)\
 $(MYSQL_FLAGS) $(SQLITE_FLAGS) $(PROFILER_FLAGS)\
 $(OPTIONAL_FLAGS) -D_THREAD_SAFE -D_REENTRANT -Wall -Wextra -Wno-strict-aliasing -Wno-unused-parameter -Wno-array-bounds -pthread

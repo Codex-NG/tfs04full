@@ -1,5 +1,5 @@
 AC_PREREQ([2.50])
-AC_INIT([TheForgottenServer], [0.4])
+AC_INIT([Fir3element], [v0.1])
 AM_INIT_AUTOMAKE([1.10 foreign])
 AC_CONFIG_SRCDIR([account.h])
 AM_CONFIG_HEADER([config.h])
@@ -229,7 +229,7 @@ AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 echo
-#echo The Forgotten Server 0.4
+#echo Fir3element v0.1
 echo $PACKAGE $VERSION
 echo
 echo Server diagnostics.......... : $serverDiag
