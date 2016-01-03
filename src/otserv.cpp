@@ -604,7 +604,7 @@ void otserv(StringVec, ServiceManager* services)
 		uint32_t resolvedIp = inet_addr(ip.c_str());
 		if(resolvedIp == INADDR_NONE)
 		{
-			hostent* host = gethostbyname(ip.c_str());
+			struct hostent* host = gethostbyname(ip.c_str());
 			if(!host)
 			{
 				std::clog << "..." << std::endl;
@@ -622,36 +622,38 @@ void otserv(StringVec, ServiceManager* services)
 	}
 
 	ipList.push_back(boost::asio::ip::address_v4(INADDR_LOOPBACK));
-	bool owned = false;
-
-	char hostName[128];
-	if(!gethostname(hostName, 128))
+	if(!g_config.getBool(ConfigManager::BIND_ONLY_GLOBAL_ADDRESS))
 	{
-		if(hostent* host = gethostbyname(hostName))
+		char hostName[128];
+		if(!gethostname(hostName, 128))
 		{
-			std::clog << "> Local IP address(es): ";
-			for(uint8_t** addr = (uint8_t**)host->h_addr_list; addr[0]; addr++)
+			if(hostent* host = gethostbyname(hostName))
 			{
-				std::clog << (int32_t)(addr[0][0]) << "." << (int32_t)(addr[0][1]) << "."
-					<< (int32_t)(addr[0][2]) << "." << (int32_t)(addr[0][3]) << "\t";
+				std::stringstream s;
+				for(uint8_t** addr = (uint8_t**)host->h_addr_list; addr[0] != NULL; addr++)
+				{
+					uint32_t resolved = swap_uint32(*(uint32_t*)(*addr));
+					if(m_ip.to_v4().to_ulong() == resolved)
+						continue;
 
-				ipList.push_back(boost::asio::ip::address_v4(*(uint32_t*)(*addr)));
-				if(ipList.back() == m_ip)
-					owned = true; // fuck yeah
+					ipList.push_back(boost::asio::ip::address_v4(resolved));
+					serverIps.push_front(std::make_pair(*(uint32_t*)(*addr), 0x0000FFFF));
 
-				serverIps.push_front(std::make_pair(*(uint32_t*)(*addr), 0x0000FFFF));
+					s << (int32_t)(addr[0][0]) << "." << (int32_t)(addr[0][1]) << "."
+						<< (int32_t)(addr[0][2]) << "." << (int32_t)(addr[0][3]) << "\t";
+				}
+
+				if(s.str().size())
+					std::clog << "> Local IP address(es): " << s.str() << std::endl;
 			}
-
-			std::clog << std::endl;
 		}
-	}
 
-	serverIps.push_front(std::make_pair(LOCALHOST, 0xFFFFFFFF)); // we gotta check it!
-	if(ip.size() && !owned)
-	{
-		ipList.clear();
-		ipList.push_back(boost::asio::ip::address_v4(INADDR_ANY));
+		serverIps.push_front(std::make_pair(LOCALHOST, 0xFFFFFFFF));
+		if(m_ip.to_v4().to_ulong() != LOCALHOST)
+			ipList.push_back(boost::asio::ip::address_v4(LOCALHOST));
 	}
+	else if(ipList.size() < 2)
+		startupErrorMessage("Unable to bind any IP address! You may want to disable \"bindOnlyGlobalAddress\" setting in config.lua");
 
 	services->add<ProtocolStatus>(g_config.getNumber(ConfigManager::STATUS_PORT), ipList);
 	services->add<ProtocolManager>(g_config.getNumber(ConfigManager::MANAGER_PORT), ipList);

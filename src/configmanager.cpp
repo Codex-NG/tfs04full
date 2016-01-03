@@ -100,7 +100,7 @@ bool ConfigManager::load()
 		m_confNumber[MYSQL_READ_TIMEOUT] = getGlobalNumber("mysqlReadTimeout", 10);
 		m_confNumber[MYSQL_WRITE_TIMEOUT] = getGlobalNumber("mysqlWriteTimeout", 10);
 		m_confBool[OPTIMIZE_DATABASE] = getGlobalBool("startupDatabaseOptimization", true);
-		m_confString[MAP_NAME] = getGlobalString("mapName", "forgotten.otbm.gz");
+		m_confString[MAP_NAME] = getGlobalString("mapName", "forgotten.otbm");
 		m_confBool[GLOBALSAVE_ENABLED] = getGlobalBool("globalSaveEnabled", true);
 		m_confNumber[GLOBALSAVE_H] = getGlobalNumber("globalSaveHour", 8);
 		m_confNumber[GLOBALSAVE_M] = getGlobalNumber("globalSaveMinute", 0);
@@ -115,6 +115,7 @@ bool ConfigManager::load()
 		m_confBool[LOGIN_ONLY_LOGINSERVER] = getGlobalBool("loginOnlyWithLoginServer", false);
 		#endif
 		m_confString[ENCRYPTION_TYPE] = getGlobalString("encryptionType", "sha1");
+		m_confBool[BIND_ONLY_GLOBAL_ADDRESS] = getGlobalBool("bindOnlyGlobalAddress", false);
 	}
 
 	m_confString[MAP_AUTHOR] = getGlobalString("mapAuthor", "Unknown");
