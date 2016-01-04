@@ -62,7 +62,7 @@ bool Mailbox::sendItem(Creature* actor, Item* item)
 {
 	uint32_t depotId = 0;
 	std::string name;
-	if(!getRecipient(item, name, depotId) || name.empty() || !depotId || item->getWeight() > 5000)
+	if(!getRecipient(item, name, depotId) || name.empty() || !depotId)
 		return false;
 
 	return IOLoginData::getInstance()->playerMail(actor, name, depotId, item);
