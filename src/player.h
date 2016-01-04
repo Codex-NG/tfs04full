@@ -197,7 +197,7 @@ class Player : public Creature, public Cylinder
 			nextSpectator++;
 
 			std::stringstream ss;
-			ss << "Viewer" << cast.curId;
+			ss << "Viewer " << cast.curId;
 			pg->viewerName = ss.str().c_str();
 			cast.curId++;
 		}
