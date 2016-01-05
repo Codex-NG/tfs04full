@@ -5,8 +5,16 @@ local config = {
 
 function onLogin(cid)
 	local loss = getConfigValue('deathLostPercent')
-	if(loss ~= nil) then
+	if(loss ~= nil and getPlayerStorageValue(cid, "bless") ~= 5) then
 		doPlayerSetLossPercent(cid, PLAYERLOSS_EXPERIENCE, loss * 10)
+	end
+
+	if getPlayerStorageValue(cid, "death_bless") == 1 then
+		doPlayerSetLossPercent(cid, PLAYERLOSS_EXPERIENCE, 100)
+		doPlayerSetLossPercent(cid, PLAYERLOSS_SKILLS, 100)
+		doPlayerSetLossPercent(cid, PLAYERLOSS_ITEMS, 100)
+		doPlayerSetLossPercent(cid, PLAYERLOSS_CONTAINERS, 100)
+		setPlayerStorageValue(cid, "death_bless", 0)
 	end
 
 	local accountManager = getPlayerAccountManager(cid)
@@ -43,5 +51,6 @@ function onLogin(cid)
 
 	registerCreatureEvent(cid, "ReportBug")
 	registerCreatureEvent(cid, "AdvanceSave")
+	registerCreatureEvent(cid, "death_bless")
 	return true
 end

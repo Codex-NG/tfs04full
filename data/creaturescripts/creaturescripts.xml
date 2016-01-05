@@ -11,4 +11,6 @@
 	<event type="think" name="SkullCheck" event="script" value="skullcheck.lua"/>
 
 	<event type="moveitem" name="MoveItem" event="script" value="houseprotect.lua"/>
+	
+	<event type="death" name="death_bless" event="script" value="death_bless.lua"/>
 </creaturescripts>
