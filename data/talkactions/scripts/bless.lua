@@ -14,11 +14,5 @@ function onSay(cid, words, param)
 	doPlayerSendTextMessage(cid, MESSAGE_STATUS_CONSOLE_BLUE, "You have been blessed by the gods!")
 	doSendMagicEffect(getPlayerPosition(cid), CONST_ME_HOLYAREA)
 	doSendMagicEffect(getPlayerPosition(cid), CONST_ME_FIREWORK_YELLOW)
-	if(getCreatureSkullType ~= SKULL_RED and getCreatureSkullType ~= SKULL_BLACK) then
-		doPlayerSetLossPercent(cid, PLAYERLOSS_EXPERIENCE, 60)
-		doPlayerSetLossPercent(cid, PLAYERLOSS_SKILLS, 60)
-		doPlayerSetLossPercent(cid, PLAYERLOSS_ITEMS, 0)
-		doPlayerSetLossPercent(cid, PLAYERLOSS_CONTAINERS, 0)
-	end
 	return true
 end
