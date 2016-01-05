@@ -9,7 +9,7 @@ function onLogin(cid)
 		doPlayerSetLossPercent(cid, PLAYERLOSS_EXPERIENCE, loss * 10)
 	end
 
-	if getPlayerStorageValue(cid, "death_bless") == 1 then
+	if(getPlayerStorageValue(cid, "death_bless") == 1) then
 		local t = {PLAYERLOSS_EXPERIENCE, PLAYERLOSS_SKILLS, PLAYERLOSS_ITEMS, PLAYERLOSS_CONTAINERS}
 		for i = 1, #t do
 			doPlayerSetLossPercent(cid, t[i], 100)
