@@ -1720,14 +1720,9 @@ ReturnValue Game::internalRemoveItem(Creature* actor, Item* item, int32_t count 
 		int32_t index = cylinder->__getIndexOfThing(item);
 		cylinder->__removeThing(item, count);
 
-		bool isCompleteRemoval = false;
+		cylinder->postRemoveNotification(actor, item, NULL, index, item->isRemoved());
 		if(item->isRemoved())
-		{
-			isCompleteRemoval = true;
 			freeThing(item);
-		}
-
-		cylinder->postRemoveNotification(actor, item, NULL, index, isCompleteRemoval);
 	}
 
 	item->onRemoved();
