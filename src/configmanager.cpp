@@ -150,6 +150,7 @@ bool ConfigManager::load()
 	m_confBool[NAMELOCK_MANAGER] = getGlobalBool("namelockManager", false);
 	m_confNumber[START_LEVEL] = getGlobalNumber("newPlayerLevel", 1);
 	m_confNumber[START_MAGICLEVEL] = getGlobalNumber("newPlayerMagicLevel", 0);
+	m_confBool[START_CHOOSEVOC] = getGlobalBool("newPlayerChooseVoc", false);
 	m_confBool[START_CHOOSETOWN]= getGlobalBool("newPlayerChooseTown", true);
 	m_confNumber[HOUSE_PRICE] = getGlobalNumber("housePriceEachSquare", 1000);
 	m_confNumber[WHITE_SKULL_TIME] = getGlobalNumber("whiteSkullTime", 15 * 60 * 1000);
