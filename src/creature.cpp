@@ -1110,7 +1110,7 @@ double Creature::getDamageRatio(Creature* attacker) const
 			attackerDamage += it->second.total;
 	}
 
-	return attackerDamage / totalDamage;
+	return (totalDamage ? attackerDamage / totalDamage : 0);
 }
 
 void Creature::addDamagePoints(Creature* attacker, int32_t damagePoints)

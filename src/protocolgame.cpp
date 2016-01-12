@@ -148,8 +148,14 @@ bool ProtocolGame::login(const std::string& name, uint32_t id, const std::string
 				return false;
 			}
 		}
-		else if(player->getName() == "Account Manager" && g_config.getBool(ConfigManager::ACCOUNT_MANAGER))
+		else if(player->getName() == "Account Manager")
 		{
+			if(!g_config.getBool(ConfigManager::ACCOUNT_MANAGER))
+			{
+				disconnectClient(0x14, "Account Manager is disabled.");
+				return false;
+			}
+
 			if(id != 1)
 			{
 				player->accountManager = MANAGER_ACCOUNT;
@@ -2625,7 +2631,7 @@ void ProtocolGame::sendTextWindow(uint32_t windowTextId, Item* item, uint16_t ma
 		TRACK_MESSAGE(msg);
 		msg->put<char>(0x96);
 		msg->put<uint32_t>(windowTextId);
-		msg->putItemId(item);
+		msg->putItem(item);
 		if(canWrite)
 		{
 			msg->put<uint16_t>(maxLen);
