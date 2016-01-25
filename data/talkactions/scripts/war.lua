@@ -135,7 +135,7 @@ function onSay(cid, words, param, channel)
 		return true
 	end
 
-	if(not isInArray({"end", "finish"}, t[1])) then
+	if(not isInArray({"end"}, t[1])) then
 		return false
 	end
 
@@ -148,28 +148,19 @@ function onSay(cid, words, param, channel)
 		doGuildRemoveEnemy(enemy, guild)
 
 		db.executeQuery(query)
-		doBroadcastMessage(getPlayerGuildName(cid) .. " has " .. (status == 4 and "mend fences" or "ended up a war") .. " with " .. enemyName .. ".", MESSAGE_EVENT_ADVANCE)
+		doBroadcastMessage(getPlayerGuildName(cid) .. " has ended up a war with " .. enemyName .. ".", MESSAGE_EVENT_ADVANCE)
 		return true
 	end
 
-	if(status == 4) then
-		doPlayerSendChannelMessage(cid, "", "Currently there's no pending war truce from " .. enemyName .. ".", TALKTYPE_CHANNEL_W, CHANNEL_GUILD)
-		return true
-	end
-
-	tmp = db.getResult("SELECT `id`, `end` FROM `guild_wars` WHERE `guild_id` = " .. enemy .. " AND `enemy_id` = " .. guild .. " AND `status` = 1")
+	tmp = db.getResult("SELECT `id` FROM `guild_wars` WHERE `guild_id` = " .. enemy .. " AND `enemy_id` = " .. guild .. " AND `status` = " .. status)
 	if(tmp:getID() ~= -1) then
-		if(tmp:getDataInt("end") > 0) then
-			tmp:free()
-			doPlayerSendChannelMessage(cid, "", "You cannot request ending for war with " .. enemyName .. ".", TALKTYPE_CHANNEL_W, CHANNEL_GUILD)
-			return true
-		end
-
-		local query = "UPDATE `guild_wars` SET `status` = 4, `end` = " .. os.time() .. " WHERE `id` = " .. tmp:getDataInt("id")
+		local query = "UPDATE `guild_wars` SET `end` = " .. os.time() .. ", `status` = 5 WHERE `id` = " .. tmp:getDataInt("id")
 		tmp:free()
+		doGuildRemoveEnemy(guild, enemy)
+		doGuildRemoveEnemy(enemy, guild)
 
 		db.executeQuery(query)
-		doBroadcastMessage(getPlayerGuildName(cid) .. " has signed an armstice declaration on a war with " .. enemyName .. ".", MESSAGE_EVENT_ADVANCE)
+		doBroadcastMessage(getPlayerGuildName(cid) .. " has ended up a war with " .. enemyName .. ".", MESSAGE_EVENT_ADVANCE)
 		return true
 	end
 

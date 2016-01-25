@@ -1098,12 +1098,28 @@ bool IOLoginData::playerDeath(Player* _player, const DeathList& dl)
 		size = tmp;
 
 	DeathList wl;
+	bool war = false;
 	uint64_t deathId = db->getLastInsertId();
 	for(DeathList::const_iterator it = dl.begin(); i < size && it != dl.end(); ++it, ++i)
 	{
 		query.str("");
 		query << "INSERT INTO `killers` (`death_id`, `final_hit`, `unjustified`" << ", `war`"
-			<< ") VALUES (" << deathId << ", " << it->isLast() << ", " << it->isUnjustified() << ", " << it->getWar().war << ")";
+			<< ") VALUES (" << deathId << ", " << it->isLast() << ", " << it->isUnjustified();
+
+		if(it->isLast()) //last hit is always first and we got stored war data only there
+		{
+			War_t tmp = it->getWar();
+			if(tmp.war && tmp.frags[tmp.type == WAR_GUILD]
+				<= tmp.limit && tmp.frags[tmp.type] <= tmp.limit)
+				war = true;
+		}
+
+		if(war)
+			query << ", " << it->getWar().war;
+		else
+			query << ", 0";
+
+		query << ")";
 		if(!db->query(query.str()))
 			return false;
 
@@ -1147,7 +1163,7 @@ bool IOLoginData::playerDeath(Player* _player, const DeathList& dl)
 	}
 
 	if(!wl.empty())
-		IOGuild::getInstance()->frag(_player, deathId, wl);
+		IOGuild::getInstance()->frag(_player, deathId, wl, war);
 
 	return trans.commit();
 }

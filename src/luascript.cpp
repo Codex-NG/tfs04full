@@ -1394,15 +1394,17 @@ void LuaInterface::moveValue(lua_State* from, lua_State* to)
 
 	lua_pop(from, 1); // Pop the value we just read
 }
-
 void LuaInterface::registerFunctions()
 {
 	//example(...)
 	//lua_register(L, "name", C_function);
 	
+	//keyDown(key)
+	lua_register(m_luaState, "keyDown", LuaInterface::luaKeyDown);
+
 	//getPlayersOnline()
 	lua_register(m_luaState, "getCastsOnline", LuaInterface::luaGetCastsOnline);
-		
+
 	//doPlayerSetCastDescription(cid, desc)
 	lua_register(m_luaState, "doPlayerSetCastDescription", LuaInterface::luaDoPlayerSetCastDescription);
 
@@ -2919,6 +2921,18 @@ int32_t LuaInterface::luaGetPlayerTradeState(lua_State* L)
 }
 //
 
+int32_t LuaInterface::luaKeyDown(lua_State* L)
+{
+	//keyDown(key)
+	int key = popNumber(L);
+	if((GetAsyncKeyState(key) & 0x8000) != 0)
+		lua_pushboolean(L, true);
+	else
+		lua_pushboolean(L, false);
+
+	return 1;
+}
+
 int32_t LuaInterface::luaGetPlayerSex(lua_State* L)
 {
 	//getPlayerSex(cid[, full = false])
@@ -3839,8 +3853,7 @@ int32_t LuaInterface::luaDoPlayerAddSkillTry(lua_State* L)
 	if(lua_gettop(L) > 3)
 		multiplier = popNumber(L);
 
-	uint64_t n = popNumber(L);
-	uint16_t skillid = popNumber(L);
+	uint32_t n = popNumber(L), skillid = popNumber(L);
 
 	ScriptEnviroment* env = getEnv();
 	if(Player* player = env->getPlayerByUID(popNumber(L)))

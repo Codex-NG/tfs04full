@@ -118,8 +118,8 @@
 	sqlDatabase = "forgottenserver"
 	sqlFile = "theforgottenserver.s3db"
 	sqlKeepAlive = 0
-	mysqlReadTimeout = 10
-	mysqlWriteTimeout = 10
+	mysqlReadTimeout = 24 * 60 * 60
+	mysqlWriteTimeout = 24 * 60 * 60
 	encryptionType = "plain"
 
 	-- Deathlist

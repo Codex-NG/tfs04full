@@ -409,7 +409,7 @@ void Weapon::onUsedWeapon(Player* player, Item* item, Tile*) const
 	if(!player->hasFlag(PlayerFlag_NotGainSkill))
 	{
 		skills_t skillType;
-		uint64_t skillPoint = 0;
+		uint32_t skillPoint = 0;
 		if(getSkillType(player, item, skillType, skillPoint))
 			player->addSkillAdvance(skillType, skillPoint);
 	}
@@ -422,7 +422,7 @@ void Weapon::onUsedWeapon(Player* player, Item* item, Tile*) const
 	{
 		player->changeMana(-manaCost);
 		if(!player->hasFlag(PlayerFlag_NotGainMana) && (player->getZone() != ZONE_HARDCORE
-			|| g_config.getBool(ConfigManager::PVPZONE_ADDMANASPENT)))
+			|| !g_config.getBool(ConfigManager::PVPZONE_ADDMANASPENT)))
 			player->addManaSpent(manaCost);
 	}
 
@@ -554,7 +554,7 @@ bool WeaponMelee::useWeapon(Player* player, Item* item, Creature* target) const
 }
 
 bool WeaponMelee::getSkillType(const Player* player, const Item* item,
-	skills_t& skill, uint64_t& skillpoint) const
+	skills_t& skill, uint32_t& skillpoint) const
 {
 	skillpoint = 0;
 	if(player->getAddAttackSkill())
@@ -905,7 +905,7 @@ int32_t WeaponDistance::getWeaponDamage(const Player* player, const Creature* ta
 }
 
 bool WeaponDistance::getSkillType(const Player* player, const Item*,
-	skills_t& skill, uint64_t& skillpoint) const
+	skills_t& skill, uint32_t& skillpoint) const
 {
 	skill = SKILL_DIST;
 	skillpoint = 0;

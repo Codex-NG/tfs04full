@@ -23,7 +23,7 @@
 #define CLIENT_VERSION_STRING "Only clients with protocol 8.6 allowed!"
 
 #define SOFTWARE_NAME "Fir3element"
-#define SOFTWARE_VERSION "v0.1"
+#define SOFTWARE_VERSION "2016"
 #define SOFTWARE_PROTOCOL "8.6"
 #define VERSION_DATABASE 25
 
